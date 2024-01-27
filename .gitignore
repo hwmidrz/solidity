@@ -1,0 +1,90 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.4;
+contract buyer {
+    
+
+
+    struct Buy {
+        string name;
+        address ownerBuyer;
+        uint amount;
+    }
+
+    Buy[] public newbuy;
+
+    address public  _ownerbuyer;
+   
+    mapping (address => uint)  balances;
+
+    constructor(string memory _name, address _ownerbuyer, uint _amount)  payable  {
+
+        newbuy.push(Buy(_name, _ownerbuyer, _amount));
+
+        _ownerbuyer = msg.sender;
+
+        balances[msg.sender]=msg.value *1 wei;
+    }
+
+    modifier onlyowner() {
+
+        require(msg.sender == _ownerbuyer, "This account is not the owner");
+        _;
+    }
+    function needbuyer(string memory commodity) public  onlyowner() returns (string memory) {
+       return commodity;
+    }
+}    
+pragma solidity ^0.8.0;
+
+contract SellerIsBuyer {
+
+       struct Sell {
+        string name;
+        uint256 price;
+    }
+    Sell[] public sells;
+    
+    address public  ownerSeller;
+
+    mapping (string => uint) public commodityamount;
+
+    uint public commodity;  // اضافه کردن متغیر commodity
+    uint public month=12;
+    uint public offprice;
+    
+
+    constructor() payable {
+
+        ownerSeller = msg.sender; 
+    }     
+    modifier onlyseller{
+
+    require(msg.sender ==ownerSeller,"this not ownerseller");
+    _;
+    }
+
+    function addCommodity(string memory _name, uint256 _price,uint _month) public {
+          if (_month>10 && _month=<12){
+
+              offprice=_price/2;
+
+              sells.push(Sell(_name,offprice));
+          }
+          else {
+            sells.push(Sell(_name, _price));
+
+          }
+
+    }
+
+    function getCommodityPrice(uint256 index,) public view returns (string memory, uint256) {
+
+        require(index < sells.length,"thisssssss");
+
+        Sell storage commodity = sells[index];
+      
+
+        return (commodity.name, commodity.price);
+    }
+}
+
